@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-
+from .models import Material, Category
 
 class SuperUserSerializer(serializers.ModelSerializer):
     # Campo de entrada, não parte do modelo User
@@ -29,3 +29,19 @@ class UserListSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'is_staff', 'is_superuser']
+
+
+class MaterialSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Material
+        fields = ['id', 'serial', 'name', 'type', 'expiry_date', 'category', 'campo']
+        extra_kwargs = { 'serial': {'required': False} # Torna o campo serial opcional 
+                        }
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['id', 'name', 'identifier']
+
+

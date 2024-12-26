@@ -5,7 +5,10 @@ from rest_framework.decorators import api_view, permission_classes
 
 from rest_framework import status
 from django.contrib.auth.models import User
-from .serializers import SuperUserSerializer, UserListSerializer
+from .serializers import SuperUserSerializer, UserListSerializer, MaterialSerializer, CategorySerializer
+from .models import Category, Material
+
+# Users
 
 
 @api_view(['GET'])
@@ -15,7 +18,8 @@ def get_user_by_token(request):
     user_data = {
         'username': user.username,
         'email': user.email,
-        'id': user.id
+        'id': user.id,
+        'is_admin': user.is_superuser
     }
     return Response(user_data)
 
@@ -38,3 +42,156 @@ def list_users(request):
         users = User.objects.all()
         serializer = UserListSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def delete_user(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return Response({"error": "Usuário não encontrado"}, status=status.HTTP_404_NOT_FOUND)
+
+    user.delete()
+    return Response({"message": "Usuário deletado com sucesso"}, status=status.HTTP_202_ACCEPTED)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def find_user_by_id(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return Response({"error": "Usuário não encontrado"}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = UserListSerializer(user)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def edit_user(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return Response({"error": "Usuário não encontrado"}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = SuperUserSerializer(user, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        updated_user = SuperUserSerializer(user).data
+        return Response(updated_user, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# MATERIAL
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_material(request):
+
+    if request.method == 'POST':
+        data = request.data
+        # Verificar se a categoria existe
+        category_id = data.get('category')
+        try:
+            category = Category.objects.get(id=category_id)
+        except Category.DoesNotExist:
+            return Response({"category": ["Pk inválido \"{}\" - objeto não existe.".format(category_id)]}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Remover o campo serial do data antes de criar o material
+        data.pop('serial', None)
+
+        serializer = MaterialSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_material(request, serial):
+    try:
+        material = Material.objects.get(serial=serial)
+    except Material.DoesNotExist:
+        return Response({"error": "Material not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    data = request.data
+    # Verificar se a categoria existe
+    category_id = data.get('category')
+    if category_id:
+        try:
+            category = Category.objects.get(id=category_id)
+        except Category.DoesNotExist:
+            return Response({"category": ["Pk inválido \"{}\" - objeto não existe.".format(category_id)]}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Remover o campo serial do data para não tentar atualizá-lo
+    data.pop('serial', None)
+
+    serializer = MaterialSerializer(material, data=data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def list_materials(request):
+    if request.method == 'GET':
+        materials = Material.objects.all()
+        serializer = MaterialSerializer(materials, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+# Deletar todos os materiais
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_all_materials(request):
+    if request.method == 'DELETE':
+        count, _ = Material.objects.all().delete()
+        return Response({'message': f'{count} materials were deleted.'}, status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_material_by_id(request, id_material):
+    if request.method == 'DELETE':
+        material = Material.objects.get(id=id_material)
+        material.delete()
+        return Response({"message": "Deletado com sucesso!"}, status=status.HTTP_202_ACCEPTED)
+    return Response({"message": "Material não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+
+
+# Categorias
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def list_categories(request):
+    if request.method == 'GET':
+        categories = Category.objects.all()
+        serializer = CategorySerializer(categories, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_category_by_id(request, cat_id):
+    if request.method == 'GET':
+        categories = Category.objects.get(id=cat_id)
+        serializer = CategorySerializer(categories)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_category(request):
+    if request.method == 'POST':
+        data = request.data
+        serializer = CategorySerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

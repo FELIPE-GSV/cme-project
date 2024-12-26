@@ -5,10 +5,11 @@ import ImageHome from "../../../assets/imageFundoLogin.png"
 import LogoHome from "../../../assets/logoCMETRACK-removebg-preview.png"
 import { Button, Input, notification } from "antd"
 import { EyeInvisibleOutlined, EyeTwoTone, UserOutlined } from '@ant-design/icons'
-import { BASE_URL } from "@/app/api/api"
+import { BASE_URL } from "@/api/api"
 import { useState } from "react"
 import { NotificationType } from "@/app/layout"
 import { useRouter } from "next/navigation"
+import { useAside } from "@/contexts/contextAside/contextAside"
 
 export default function Login() {
     const router = useRouter()
@@ -27,8 +28,11 @@ export default function Login() {
         });
     };
 
+    const { editUser } = useAside()
+
 
     const loginMethod = async () => {
+
 
         if (loginObject.username === "" || loginObject.password === "") {
             openNotificationWithIcon("warning", "Campos vazios.", "Certifique-se de que preencheu todoso os campos!")
@@ -54,7 +58,33 @@ export default function Login() {
                     localStorage.setItem('tokenTimestamp', now.toString());
                     openNotificationWithIcon("success", "Login realizado com sucesso!.", "Carregando página seguinte...")
                     router.push("/pages/home")
-                   
+
+                    if (typeof window !== undefined) {
+                        const token = localStorage.getItem('token')
+                        try {
+                            const response = await fetch(`${BASE_URL}/get_user_by_token/`, {
+                                method: 'GET',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${token}`
+                                },
+                            })
+
+                            if (response.ok) {
+                                const data = await response.json()
+                                editUser({
+                                    username: data.username,
+                                    email: data.email,
+                                    id: data.id,
+                                    is_admin: data.is_admin
+                                })
+                            }
+                        } catch (error) {
+                            console.log(error)
+                        }
+
+                    }
+
                 }
             } else if (response.status === 404 || response.status === 401) {
                 openNotificationWithIcon("warning", "Dados incorretos.", "Certifique-se de que colocou os dados corretos!")
@@ -112,7 +142,7 @@ export default function Login() {
                                 onChange={(e) => setLoginObject({ ...loginObject, username: e.target.value })}
                             />
                             <Input.Password
-                                type="text"
+                                type="password"
                                 className="h-[35px] border-[#15A393] text-[#15A393] text-[18px] placeholder-[#15A393] placeholder-opacity-40"
                                 placeholder="Password"
                                 prefix={<></>}
@@ -120,9 +150,10 @@ export default function Login() {
                                 value={loginObject.password}
                                 onChange={(e) => setLoginObject({ ...loginObject, password: e.target.value })}
                             />
-                            <Button type="primary" className="w-full bg-[#15A393] font-bold text-[18px]" onClick={loginMethod}>
+                            <Button type="primary" className="w-full h-[35px] bg-[#15A393] font-bold text-[18px]" onClick={loginMethod}>
                                 Log in
                             </Button>
+
                         </form>
                     </div>
                 </section>
