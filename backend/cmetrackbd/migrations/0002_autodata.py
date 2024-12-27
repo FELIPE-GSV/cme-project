@@ -44,6 +44,9 @@ def create_initial_data(apps, schema_editor):
     # Create superuser
     User.objects.create_superuser('administrador', password='290916')
 
+def noop(apps, schema_editor):
+    pass
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -51,5 +54,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(create_initial_data),
+        migrations.RunPython(create_initial_data, reverse_code=noop),
     ]
