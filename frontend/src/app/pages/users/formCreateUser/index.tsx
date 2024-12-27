@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label"
 import { Plus } from "lucide-react"
 import { Button as ButtonAnt } from "antd"
 import { Switch } from "@/components/ui/switch"
-import { useRef, useState } from "react"
+import { useState } from "react"
 import { createUserInBd } from "@/services/userService"
 
 interface Props {

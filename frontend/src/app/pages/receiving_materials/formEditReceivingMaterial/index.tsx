@@ -79,7 +79,7 @@ export default function FormEditReceivingMaterial({ materials, conditions, listR
                 need_washing: true
             }));
         }
-    }, [receivingMaterial.condition]);
+    }, [receivingMaterial.condition, conditions]);
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>

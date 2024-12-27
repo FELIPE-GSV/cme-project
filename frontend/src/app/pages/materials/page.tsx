@@ -12,7 +12,6 @@ import { FormCreateMaterial } from "./formCreateMaterial"
 import { NotificationType } from "@/app/layout"
 import { FormEditMaterial } from "./formEditMaterial"
 import { deleteMaterialInBd } from "@/services/materialService"
-import { convertCategory } from "@/functions/functions"
 
 export default function Materials() {
 

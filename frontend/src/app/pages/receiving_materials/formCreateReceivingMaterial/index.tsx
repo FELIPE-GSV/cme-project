@@ -75,7 +75,7 @@ export default function FormCreateReceivingMaterial({ materials, conditions, lis
                 need_washing: true
             }));
         }
-    }, [receivingMaterial.condition]);
+    }, [receivingMaterial.condition, conditions]);
     
 
     return (
