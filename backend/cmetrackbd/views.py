@@ -262,6 +262,24 @@ def list_receiving_materials(request):
 
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
+def delete_receiving_materials(request):
+    if request.method == 'DELETE':
+        materials = ReceivingMaterials.objects.all()
+        materials.delete()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def list_receiving_materials_by_serial(request, serial):
+    if request.method == 'GET':
+        materials = ReceivingMaterials.objects.get(material__serial=serial)
+        serializer = ReceivingMaterialsSerializer(materials)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
 def delete_receiving_materials(request, id_delete):
     try:
         receiving_material = ReceivingMaterials.objects.get(id=id_delete)
@@ -315,6 +333,14 @@ def list_trataments(request):
         trataments = Tratament.objects.all()
         serializer = TratamentSerializer(trataments, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_trataments(request):
+    if request.method == 'DELETE':
+        trataments = Tratament.objects.all()
+        trataments.delete()
+        return Response({"message": "deletado com sucesso."}, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

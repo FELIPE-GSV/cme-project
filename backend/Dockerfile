@@ -1,13 +1,7 @@
 FROM python:3.11.3-alpine3.18
 LABEL maintainer="felipefeltz232@gmail.com"
 
-# Essa variável de ambiente é usada para controlar se o Python deve 
-# gravar arquivos de bytecode (.pyc) no disco. 1 = Não, 0 = Sim
 ENV PYTHONDONTWRITEBYTECODE 1
-
-# Define que a saída do Python será exibida imediatamente no console ou em 
-# outros dispositivos de saída, sem ser armazenada em buffer.
-# Em resumo, você verá os outputs do Python em tempo real.
 ENV PYTHONUNBUFFERED 1
 EXPOSE 8000
 
@@ -33,9 +27,19 @@ RUN mkdir -p /backend/data/web/static && \
     mkdir -p /backend/data/web/images && \
     chmod -R 775 /backend/data/web/static && \
     chmod -R 775 /backend/data/web/media && \
-    chmod -R +x /backend/scripts
-    
+    chmod -R +x /backend/scripts && \
+    chmod +x /scripts/commands.sh
 
 ENV PATH="/scripts:/venv/bin:$PATH"
 
-CMD ["commands.sh"]
+CMD sh -c "\
+  set -e && \
+  while ! nc -z \$POSTGRES_HOST \$POSTGRES_PORT; do \
+    echo '🟡 Waiting for Postgres Database Startup (\$POSTGRES_HOST \$POSTGRES_PORT) ...' && \
+    sleep 2; \
+  done && \
+  echo '✅ Postgres Database Started Successfully (\$POSTGRES_HOST:\$POSTGRES_PORT)' && \
+  python manage.py collectstatic --noinput && \
+  python manage.py makemigrations cmetrackbd --noinput && \
+  python manage.py migrate cmetrackbd --noinput && \
+  python manage.py runserver 0.0.0.0:8000"

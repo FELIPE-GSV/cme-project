@@ -2,42 +2,94 @@
 
 // import { NotificationType } from "@/app/layout";
 import { useAside } from "@/contexts/contextAside/contextAside";
-import { Tratament } from "@/types/models";
-import { DeleteOutlined, EditOutlined, SearchOutlined } from "@ant-design/icons";
-import { Button, Input } from "antd";
+import { getTrataments } from "@/services/tratamentsService";
+import { ReceivingMaterial, Tratament } from "@/types/models";
+import {  SearchOutlined } from "@ant-design/icons";
+import { Input, notification } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
-import { Plus } from "lucide-react";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import FormCreateTratament from "./formCreateTratament";
+import { getReceivingMaterials } from "@/services/receivingMaterialService";
+import { NotificationType } from "@/app/layout";
+import FormCompleteTratament from "./FormCompleteTratament";
 
 export default function Trataments() {
-
+    const router = useRouter()
     const { isAsideVisible } = useAside()
-    // const [api, contextHolder] = notification.useNotification();
-    const [trataments] = useState<Tratament[]>([])
-    // const openNotificationWithIcon = (type: NotificationType, message: string, description: string) => {
-    //     api[type]({
-    //         message: message,
-    //         description: description,
-    //     });
-    // };
+    const [trataments, setTrataments] = useState<Tratament[]>([])
+    const [receiving, setReceiving] = useState<ReceivingMaterial[]>([])
+
+    const [api, contextHolder] = notification.useNotification();
+    const openNotificationWithIcon = (type: NotificationType, message: string, description: string) => {
+        api[type]({
+            message: message,
+            description: description,
+        });
+    };
     const [search, setSearch] = useState("")
+
+    const listTrataments = async () => {
+        if (typeof window !== undefined) {
+            const token = localStorage.getItem("token")
+            const response = await getTrataments(token)
+            console.log(response)
+            if (response) {
+                setTrataments(response)
+            }
+        }
+    }
+
+    const listReceivingMaterials = async () => {
+        if (typeof window !== undefined) {
+            const token = localStorage.getItem('token')
+            const response = await getReceivingMaterials(token)
+
+            if (response) {
+                setReceiving(response)
+            }
+        }
+    }
+
+    useEffect(() => {
+        listTrataments()
+        listReceivingMaterials()
+    }, [router])
+
 
 
     const columns: ColumnsType<Tratament> = [
         {
             title: "Serial",
-            dataIndex: "material",
-            key: "serial",
+            dataIndex: "identifier",
+            key: "identifier",
             render: (_, record) =>
                 <strong>{record.material.serial}</strong>
 
+        },
+        {
+            title: "Termina em",
+            dataIndex: "finish_at",
+            key: "finish_at",
+            render: (_, record) =>
+                <strong>{record.finish_at}</strong>
         },
         {
             title: "Lavagem",
             dataIndex: "washing",
             key: "washing",
             render: (_, record) =>
-                <strong>{record.washing ? "sim": "não"}</strong>
+                <div>
+                    {record.washing ?
+                        <label className="p-1 bg-red-300 rounded-sm border-[2px] border-red-500 font-bold text-red-600">
+                            NECESSITA
+                        </label>
+                        :
+                        <label className="p-1 bg-green-300 rounded-sm border-[2px] border-green-500 font-bold text-green-600">
+                            OK
+                        </label>
+                    }
+                </div>
 
         },
         {
@@ -45,48 +97,61 @@ export default function Trataments() {
             dataIndex: "sterilization",
             key: "sterilization",
             render: (_, record) =>
-                <strong>{record.sterilization ? "sim": "não"}</strong>
+                <div>
+                    {
+                        record.sterilization ? <label className="p-1 bg-red-300 rounded-sm border-[2px] border-red-500 font-bold text-red-600">
+                            NECESSITA
+                        </label> : <label className="p-1 bg-green-300 rounded-sm border-[2px] border-green-500 font-bold text-green-600">
+                            OK
+                        </label>
+                    }
+                </div>
 
         },
-        {
-            title: "Distribuição",
-            dataIndex: "distribution",
-            key: "distribution",
-            render: (_, record) =>
-                <strong>{record.distribution ? "sim": "não"}</strong>
+        // {
+        //     title: "Distribuição",
+        //     dataIndex: "distribution",
+        //     key: "distribution",
+        //     render: (_, record) =>
+        //         <div>
+        //             {
+        //                 !record.distribution ? <label className="p-1 bg-yellow-300 rounded-sm border-[2px] border-yellow-500 font-bold text-yellow-600">
+        //                     Pentente
+        //                 </label> : <label className="p-1 bg-green-300 rounded-sm border-[2px] border-green-500 font-bold text-green-600">
+        //                     PRONTO
+        //                 </label>
+        //             }
+        //         </div>
 
-        },
-
+        // },
         {
             title: "Ações",
             key: "actions",
-            render: () => (
+            render: (_, record) => (
                 <div style={{ display: "flex", gap: 8 }}>
-                    <Button
-                        type="primary"
-                        iconPosition='start'
-                        icon={<EditOutlined />}
-                        className='rounded-[2px] bg-[#004281]'
-                    >
-                    </Button>
-                    <Button
+                    <FormCompleteTratament
+                        tratament={record}
+                        listTrataments={listTrataments}
+                        onMessage={() => openNotificationWithIcon("success", "Tratamento concluído.", "Novos materiais podem ser distribuidos!")}
+                    />
+                    {/* <Button
                         type='primary'
                         iconPosition='start'
                         icon={<DeleteOutlined />}
                         className='rounded-[2px] bg-[#D75C5D]'
-                    // onClick={() => deleteItem(record)}
+                        onClick={() => deleteItem(record)}
                     >
-                    </Button>
+                    </Button> */}
                 </div>
             ),
         },
-
-
     ]
 
+    const filteredTrataments = trataments.filter((item)=> item.material.serial.toLocaleLowerCase().includes(search.toLocaleLowerCase()))
+
     return (
-        // <>
-        //     {contextHolder}
+        <>
+            {contextHolder}
             <main
                 className={`
                     ${isAsideVisible ? "ml-[15%]" : "ml-0"}
@@ -108,25 +173,22 @@ export default function Trataments() {
                         onChange={(e) => setSearch(e.target.value)}
                     />
 
-                    <Button
-                        iconPosition='start'
-                        type='primary'
-                        className='bg-[#084D45] text-white h-[39px] text-[16px] font-semibold rounded-[2px]'
-                        icon={<Plus color='white' />}
-                    >
-                        Iniciar novo tratamento
-                    </Button>
+                    <FormCreateTratament
+                        receivings={receiving}
+                        listTrataments={listTrataments}
+                        onMessage={() => openNotificationWithIcon("success", "Tratamento criado.", "Informações salvas com sucesso!")}
+                    />
 
                 </section>
 
                 <Table
-                    dataSource={trataments}
+                    dataSource={filteredTrataments}
                     columns={columns}
                     rowKey={(record) => record.material.serial}
                     pagination={{ pageSize: 6 }}
                     style={{ width: "100%" }}
                 />
             </main>
-        // </>
+        </>
     )
 }

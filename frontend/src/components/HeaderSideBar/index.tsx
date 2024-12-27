@@ -1,6 +1,6 @@
 "use client"
 import { useAside } from '@/contexts/contextAside/contextAside';
-import { MenuFoldOutlined, MenuUnfoldOutlined,SmileOutlined, MedicineBoxOutlined, DeliveredProcedureOutlined, ControlOutlined } from '@ant-design/icons';
+import { MenuFoldOutlined, MenuUnfoldOutlined, SmileOutlined, MedicineBoxOutlined, DeliveredProcedureOutlined, ControlOutlined, BuildOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import { CircleUserRound } from 'lucide-react';
 import Image from 'next/image';
@@ -91,6 +91,12 @@ export default function HeaderSideBar() {
                     ${pathname === "/pages/trataments/register" && "bg-[#b6dcff77]"} 
                     transition-all duration-300 ease-in-out`}>
                         <ControlOutlined className={`text-[#084D45] w-[22px] h-[22px]`} /> Tratamentos
+                    </Link>
+                    <Link href={"/pages/distribution"} className={`w-full h-[56px] font-bold text-[16px] hover:border-l-[5px] hover:border-[#084D45] flex items-center gap-3 p-3 hover:border-opacity-100 hover:bg-[#b6dcff77] 
+                    ${pathname === "/pages/distribution" && "bg-[#b6dcff77]"} 
+                    ${pathname === "/pages/distribution/register" && "bg-[#b6dcff77]"} 
+                    transition-all duration-300 ease-in-out`}>
+                        <BuildOutlined className={`text-[#084D45] w-[22px] h-[22px]`} /> Distribuição
                     </Link>
 
 

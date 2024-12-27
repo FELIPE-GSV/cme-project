@@ -1,5 +1,25 @@
 import { BASE_URL } from "@/api/api"
 
+export async function getReceivingMaterialsById(token: string | null, serial: string) {
+    try {
+        const response = await fetch(`${BASE_URL}/receiving_materials/list/${serial}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        })
+
+        if (response.ok) {
+            const data = await response.json()
+            return data
+        }
+    } catch (error) {
+        console.log(error)
+        return error
+    }
+}
+
 export async function getReceivingMaterials(token: string | null) {
     try {
         const response = await fetch(`${BASE_URL}/receiving_materials/list/`, {
@@ -20,7 +40,7 @@ export async function getReceivingMaterials(token: string | null) {
     }
 }
 
-export async function postReceivingMaterials(token: string | null, data : {
+export async function postReceivingMaterials(token: string | null, data: {
     material: string;
     entry_date: string;
     need_washing: boolean;
@@ -55,8 +75,8 @@ export async function postReceivingMaterials(token: string | null, data : {
                 need_discard
             }),
         })
-        
-        if(response.ok){
+
+        if (response.ok) {
             const data = await response.json()
             return data
         }
@@ -67,7 +87,7 @@ export async function postReceivingMaterials(token: string | null, data : {
 
 }
 
-export async function putReceivingMaterials(token: string | null,id: number | undefined, data : {
+export async function putReceivingMaterials(token: string | null, id: number | undefined, data: {
     material: string;
     entry_date: string;
     need_washing: boolean;
@@ -101,8 +121,8 @@ export async function putReceivingMaterials(token: string | null,id: number | un
                 need_discard
             }),
         })
-        
-        if(response.ok){
+
+        if (response.ok) {
             const data = await response.json()
             return data
         }
@@ -113,21 +133,21 @@ export async function putReceivingMaterials(token: string | null,id: number | un
 }
 
 
-export async function deleteReceivingMaterial(token: string | null, id: number | undefined){
+export async function deleteReceivingMaterial(token: string | null, id: number | undefined) {
     try {
-        const response = await fetch(`${BASE_URL}/receiving_materials/delete/${id}`,{
+        const response = await fetch(`${BASE_URL}/receiving_materials/delete/${id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
         })
-        
-        if(response.ok){
+
+        if (response.ok) {
             const data = await response.json()
             return data
         }
-        
+
     } catch (error) {
         console.log(error)
         return error

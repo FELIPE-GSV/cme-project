@@ -38,7 +38,9 @@ urlpatterns = [
 
     path('receiving_materials/create/', views.create_receiving_materials, name="receiving_materials_create"),
     path('receiving_materials/list/',views.list_receiving_materials, name="receiving_materials_list" ),
+    path('receiving_materials/list/<str:serial>',views.list_receiving_materials_by_serial, name="list_receiving_materials_by_serial" ),
     path('receiving_materials/delete/<int:id_delete>', views.delete_receiving_materials, name="delete_receiving_materials"),
+    path('receiving_materials/delete/', views.delete_receiving_materials, name="delete_receiving_materials"),
     path('receiving_materials/update/<int:id>', views.update_receiving_materials, name='update_receiving_materials'),
 
     # conditions
@@ -52,4 +54,5 @@ urlpatterns = [
     path('trataments/create/', views.create_tratament, name="create_tratament"),
     path('trataments/<int:id>/update/', views.update_tratament, name='update_tratament'),
     path('trataments/<int:id>/delete/', views.delete_tratament, name='delete_tratament'),
+    path('trataments/delete/', views.delete_trataments, name='delete_trataments'),
 ]
