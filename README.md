@@ -24,7 +24,7 @@ sistema conta também com o gerenciamento de usuários internos, sendo eles Admi
 ## Recomendações
 
 1. É recomendado que esteja com um chave ssh configurada na sua máquina para facilitar o processo de clonagem.
-2. O next js 14 trabalha com um arquitetura cliente/servider, é recomendado que ao iniciar a aplicação,
+2. O next js 14 trabalha com um arquitetura cliente/servidor, é recomendado que ao iniciar a aplicação,
  reiniciar a página para que a aplicação seja compilada no cliente.
 
 ## Instalação
