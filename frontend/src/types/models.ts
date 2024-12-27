@@ -14,7 +14,7 @@ export interface UserList{
 }
 
 export interface Material {
-    id: string;
+    id?: number;
     serial: string;
     name: string;
     type: string;
@@ -22,3 +22,38 @@ export interface Material {
     category: number;
     campo: string;
 }
+
+export interface Category {
+    id: number,
+    name: string,
+    identifier: string
+}
+
+export interface Condition {
+    name: string;
+    identifier: string;
+}
+
+export interface ReceivingMaterial {
+    id?: number;
+    material: Material;
+    entry_date: string;
+    need_washing: boolean;
+    need_sterilization: boolean;
+    quantity: number;
+    condition: Condition;
+    need_discard: boolean;
+    identifier: string;
+}
+
+export interface Tratament {
+  id?: number;
+  material: Material;
+  washing: boolean;
+  sterilization: boolean;
+  distribution: boolean;
+  identifier: string;
+  finish_at: string;
+}
+
+

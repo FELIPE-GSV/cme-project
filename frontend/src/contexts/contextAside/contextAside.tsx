@@ -9,7 +9,7 @@ interface AsideContextProps {
     editUser: (user: User) => void
 }
 
-export const AsideContext = createContext<AsideContextProps>({} as any);
+export const AsideContext = createContext<AsideContextProps>({} as AsideContextProps);
 
 export const AsideProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [isAsideVisible, setIsAsideVisible] = useState(true);
@@ -17,7 +17,8 @@ export const AsideProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [user, setUser] = useState<User>({
         username: "",
         email: "",
-        id: 0
+        id: 0,
+        is_admin: true
     })
 
     const editUser = (user: User) => {
@@ -28,7 +29,13 @@ export const AsideProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const toggleAside = () => setIsAsideVisible(prev => !prev);
 
     return (
-        <AsideContext.Provider value={{ isAsideVisible, toggleAside, editUser, user }}>
+        <AsideContext.Provider value={{
+            isAsideVisible,
+            toggleAside,
+            editUser,
+            user
+        }}
+        >
             {children}
         </AsideContext.Provider>
     );

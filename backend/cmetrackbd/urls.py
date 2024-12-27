@@ -31,6 +31,25 @@ urlpatterns = [
     # categories
     path("categorys/create/", views.create_category, name="create_category"),
     path('categorys/list/', views.list_categories, name="list_categories"),
-    path('categorys/get_by_id/<int:cat_id>',
-         views.get_category_by_id, name="get_category_by_id"),
+    path('categorys/get_by_id/<int:cat_id>',views.get_category_by_id, name="get_category_by_id"),
+    path('categorys/delete/', views.delete_all_categories, name="delete_all_categories"),
+
+    # reciving materials
+
+    path('receiving_materials/create/', views.create_receiving_materials, name="receiving_materials_create"),
+    path('receiving_materials/list/',views.list_receiving_materials, name="receiving_materials_list" ),
+    path('receiving_materials/delete/<int:id_delete>', views.delete_receiving_materials, name="delete_receiving_materials"),
+    path('receiving_materials/update/<int:id>', views.update_receiving_materials, name='update_receiving_materials'),
+
+    # conditions
+
+    path('conditions/list/', views.list_conditions, name="list_conditions"),
+    path('conditions/delete/<str:id_to_delete>/', views.delete_condition_by_id, name="delete_condition"),
+
+    # trataments
+
+    path('trataments/list/', views.list_trataments, name="list_trataments"),
+    path('trataments/create/', views.create_tratament, name="create_tratament"),
+    path('trataments/<int:id>/update/', views.update_tratament, name='update_tratament'),
+    path('trataments/<int:id>/delete/', views.delete_tratament, name='delete_tratament'),
 ]

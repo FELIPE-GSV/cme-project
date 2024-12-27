@@ -1,6 +1,6 @@
 "use client"
 import { useAside } from '@/contexts/contextAside/contextAside';
-import { MenuFoldOutlined, MenuUnfoldOutlined,SmileOutlined, MedicineBoxOutlined } from '@ant-design/icons';
+import { MenuFoldOutlined, MenuUnfoldOutlined,SmileOutlined, MedicineBoxOutlined, DeliveredProcedureOutlined, ControlOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import { CircleUserRound } from 'lucide-react';
 import Image from 'next/image';
@@ -9,7 +9,7 @@ import { ExitIcon } from '@radix-ui/react-icons';
 import Logo from "../../assets/LogoHome-removebg-preview.png"
 
 
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 
 
 
@@ -79,6 +79,18 @@ export default function HeaderSideBar() {
                     ${pathname === "/pages/materials/register" && "bg-[#b6dcff77]"} 
                     transition-all duration-300 ease-in-out`}>
                         <MedicineBoxOutlined className={`text-[#084D45] w-[22px] h-[22px]`} /> Materiais
+                    </Link>
+                    <Link href={"/pages/receiving_materials"} className={`w-full h-[56px] font-bold text-[16px] hover:border-l-[5px] hover:border-[#084D45] flex items-center gap-3 p-3 hover:border-opacity-100 hover:bg-[#b6dcff77] 
+                    ${pathname === "/pages/receiving_materials" && "bg-[#b6dcff77]"} 
+                    ${pathname === "/pages/receiving_materials/register" && "bg-[#b6dcff77]"} 
+                    transition-all duration-300 ease-in-out`}>
+                        <DeliveredProcedureOutlined className={`text-[#084D45] w-[22px] h-[22px]`} /> Recebimento de materiais
+                    </Link>
+                    <Link href={"/pages/trataments"} className={`w-full h-[56px] font-bold text-[16px] hover:border-l-[5px] hover:border-[#084D45] flex items-center gap-3 p-3 hover:border-opacity-100 hover:bg-[#b6dcff77] 
+                    ${pathname === "/pages/trataments" && "bg-[#b6dcff77]"} 
+                    ${pathname === "/pages/trataments/register" && "bg-[#b6dcff77]"} 
+                    transition-all duration-300 ease-in-out`}>
+                        <ControlOutlined className={`text-[#084D45] w-[22px] h-[22px]`} /> Tratamentos
                     </Link>
 
 

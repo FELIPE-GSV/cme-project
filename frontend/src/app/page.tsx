@@ -1,8 +1,7 @@
 "use client"
-import Image from "next/image";
 
-import { Alert, Flex, Spin } from 'antd';
-import { useEffect, useState } from "react";
+import {  Spin } from 'antd';
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 const contentStyle: React.CSSProperties = {

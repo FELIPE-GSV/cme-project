@@ -5,8 +5,8 @@ from rest_framework.decorators import api_view, permission_classes
 
 from rest_framework import status
 from django.contrib.auth.models import User
-from .serializers import SuperUserSerializer, UserListSerializer, MaterialSerializer, CategorySerializer
-from .models import Category, Material
+from .serializers import SuperUserSerializer, UserListSerializer, MaterialSerializer, CategorySerializer, ConditionSerializer, ReceivingMaterialsSerializer,CreateReceivingMaterialsSerializer, TratamentSerializer, CreateTratamentSerializer
+from .models import Category, Material, Condition, ReceivingMaterials, Tratament
 
 # Users
 
@@ -195,3 +195,180 @@ def create_category(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_all_categories(request): 
+    if request.method == 'DELETE':
+        count, _ = Category.objects.all().delete()
+        return Response({'message': f'{count} materials were deleted.'}, status=status.HTTP_204_NO_CONTENT)
+
+# RECEIVING MATERIALS
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_receiving_materials(request):
+    if request.method == 'POST':
+        data = request.data
+        try:
+            material = Material.objects.get(serial=data['material'])
+            condition = Condition.objects.get(identifier=data['condition'])
+            data['material'] = material.pk
+            data['condition'] = condition.pk
+            serializer = CreateReceivingMaterialsSerializer(data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Material.DoesNotExist:
+            return Response({'error': 'Material not found'}, status=status.HTTP_400_BAD_REQUEST)
+        except Condition.DoesNotExist:
+            return Response({'error': 'Condition not found'}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_receiving_materials(request, id):
+    try:
+        receiving_material = ReceivingMaterials.objects.get(id=id)
+    except ReceivingMaterials.DoesNotExist:
+        return Response({'error': 'ReceivingMaterials not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    data = request.data
+    try:
+        material = Material.objects.get(serial=data['material'])
+        condition = Condition.objects.get(identifier=data['condition'])
+        data['material'] = material.pk
+        data['condition'] = condition.pk
+        serializer = CreateReceivingMaterialsSerializer(receiving_material, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except Material.DoesNotExist:
+        return Response({'error': 'Material not found'}, status=status.HTTP_400_BAD_REQUEST)
+    except Condition.DoesNotExist:
+        return Response({'error': 'Condition not found'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def list_receiving_materials(request):
+    if request.method == 'GET':
+        materials = ReceivingMaterials.objects.all()
+        serializer = ReceivingMaterialsSerializer(materials, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_receiving_materials(request, id_delete):
+    try:
+        receiving_material = ReceivingMaterials.objects.get(id=id_delete)
+        receiving_material.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    except ReceivingMaterials.DoesNotExist:
+        return Response({'error': 'ReceivingMaterials not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+# CONDITIONS
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def list_conditions(request):
+    if request.method == 'GET':
+        conditions = Condition.objects.all()
+        serializer = ConditionSerializer(conditions, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_condition_by_id(request, id_to_delete):
+    if request.method == 'DELETE':
+        print(f"AQUI {id_to_delete}")
+        try:
+            condition = Condition.objects.get(identifier=id_to_delete)
+        except:
+            return Response({"message": "Condição não encontrada"}, status=status.HTTP_404_NOT_FOUND)
+        condition.delete()
+        return Response({"message": "Deletado com sucesso"}, status=status.HTTP_202_ACCEPTED)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_receiving_materials(request, id_delete):
+    try:
+        receiving_material = ReceivingMaterials.objects.get(id=id_delete)
+        receiving_material.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    except ReceivingMaterials.DoesNotExist:
+        return Response({'error': 'ReceivingMaterials not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+# TRATAMENTS
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def list_trataments(request):
+    if request.method == 'GET':
+        trataments = Tratament.objects.all()
+        serializer = TratamentSerializer(trataments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_tratament(request):
+    if request.method == 'POST':
+        data = request.data
+        try:
+            receiving_material = ReceivingMaterials.objects.get(material__serial=data['material'])
+            material = receiving_material.material
+            data['material'] = material.pk
+            serializer = CreateTratamentSerializer(data=data)
+            if serializer.is_valid():
+                serializer.save()
+                response_data = serializer.data
+                response_data['material'] = MaterialSerializer(material).data
+                return Response(response_data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except ReceivingMaterials.DoesNotExist:
+            return Response({'error': 'Este material não foi solicitado!'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_tratament(request, id):
+    try:
+        tratament = Tratament.objects.get(id=id)
+    except Tratament.DoesNotExist:
+        return Response({'error': 'Tratament not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    data = request.data
+    try:
+        material = Material.objects.get(serial=data['material'])
+        data['material'] = material.pk
+        serializer = CreateTratamentSerializer(tratament, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            response_data = serializer.data
+            response_data['material'] = MaterialSerializer(material).data
+            return Response(response_data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except Material.DoesNotExist:
+        return Response({'error': 'Material not found'}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_tratament(request, id):
+    try:
+        tratament = Tratament.objects.get(id=id)
+        tratament.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    except Tratament.DoesNotExist:
+        return Response({'error': 'Tratament not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+
+

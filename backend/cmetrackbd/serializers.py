@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Material, Category
+from .models import Material, Category, Condition, ReceivingMaterials, Tratament
 
 class SuperUserSerializer(serializers.ModelSerializer):
     # Campo de entrada, não parte do modelo User
@@ -35,13 +35,46 @@ class MaterialSerializer(serializers.ModelSerializer):
     class Meta:
         model = Material
         fields = ['id', 'serial', 'name', 'type', 'expiry_date', 'category', 'campo']
-        extra_kwargs = { 'serial': {'required': False} # Torna o campo serial opcional 
-                        }
+        extra_kwargs = { 'serial': {'required': False}}
 
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ['id', 'name', 'identifier']
+
+
+class ConditionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Condition
+        fields = '__all__'
+
+class CreateReceivingMaterialsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ReceivingMaterials
+        fields = '__all__'
+
+class ReceivingMaterialsSerializer(serializers.ModelSerializer):
+    material = MaterialSerializer(read_only=True)
+    condition = ConditionSerializer(read_only=True)
+    class Meta:
+        model = ReceivingMaterials
+        fields = '__all__'
+
+
+class TratamentSerializer(serializers.ModelSerializer):
+    material = MaterialSerializer(read_only=True)
+
+    class Meta:
+        model = Tratament
+        fields = '__all__'
+
+class CreateTratamentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tratament
+        fields = '__all__'
+
+
+
 
 

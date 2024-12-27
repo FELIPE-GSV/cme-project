@@ -2,15 +2,14 @@
 
 import { useAside } from "@/contexts/contextAside/contextAside"
 import Input from "antd/es/input";
-import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons';
+import { DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import { BASE_URL } from "@/api/api";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { User, UserList } from "@/types/models";
+import { UserList } from "@/types/models";
 import Table, { ColumnsType } from "antd/es/table";
 import { Button, notification } from "antd";
 import { NotificationType } from "@/app/layout";
-import { Plus } from "lucide-react";
 import { FormCreateUser } from "./formCreateUser";
 import { deleteUserByID } from "@/services/userService";
 import { FormEditUser } from "./formEditUser";
