@@ -67,7 +67,7 @@ Passos para instalar e configurar o ambiente:
 3. Ainda assim pode executar pelo container do Docker do backend:
     ```bash
     - python manage.py makemigrations
-    - py manage.py migrate
+    - python manage.py migrate
 
 
 ## Usuários
