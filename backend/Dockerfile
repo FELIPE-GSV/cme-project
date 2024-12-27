@@ -27,7 +27,6 @@ RUN mkdir -p /backend/data/web/static && \
     mkdir -p /backend/data/web/images && \
     chmod -R 775 /backend/data/web/static && \
     chmod -R 775 /backend/data/web/media && \
-    chmod -R +x /backend/scripts && \sudo chown [user] -R [/backend] && \
     chmod +x /scripts/commands.sh
 
 ENV PATH="/scripts:/venv/bin:$PATH"
