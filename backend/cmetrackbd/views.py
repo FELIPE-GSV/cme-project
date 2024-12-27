@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view, permission_classes
 
 from rest_framework import status
 from django.contrib.auth.models import User
-from .serializers import SuperUserSerializer, UserListSerializer, MaterialSerializer, CategorySerializer, ConditionSerializer, ReceivingMaterialsSerializer,CreateReceivingMaterialsSerializer, TratamentSerializer, CreateTratamentSerializer
+from .serializers import SuperUserSerializer, UserListSerializer, MaterialSerializer,ListMaterialSerializer, CategorySerializer, ConditionSerializer, ReceivingMaterialsSerializer,CreateReceivingMaterialsSerializer, TratamentSerializer, CreateTratamentSerializer
 from .models import Category, Material, Condition, ReceivingMaterials, Tratament
 
 # Users
@@ -141,7 +141,7 @@ def update_material(request, serial):
 def list_materials(request):
     if request.method == 'GET':
         materials = Material.objects.all()
-        serializer = MaterialSerializer(materials, many=True)
+        serializer = ListMaterialSerializer(materials, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 # Deletar todos os materiais

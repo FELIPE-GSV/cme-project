@@ -30,6 +30,8 @@ export function FormEditUser({ findUsers, onMessage, user }: Props) {
         "id": user.id
     })
 
+    const [isOpen, setIsOpen] = useState(false);
+
     const editUser = async () => {
         if(typeof window !== undefined){
             const token = localStorage.getItem('token')
@@ -45,7 +47,7 @@ export function FormEditUser({ findUsers, onMessage, user }: Props) {
 
 
     return (
-        <Dialog>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <ButtonAnt
                     type="primary"

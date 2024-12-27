@@ -42,6 +42,8 @@ export function FormCreateMaterial({ categories, listMaterials, onMessage }: Pro
         }));
     };
 
+    const [isOpen, setIsOpen] = useState(false);
+
     const createMaterial = async () => {
         if(typeof window !== undefined){
             const token = localStorage.getItem(`token`)
@@ -49,12 +51,13 @@ export function FormCreateMaterial({ categories, listMaterials, onMessage }: Pro
             if(response){
                 listMaterials()
                 onMessage()
+                setIsOpen(false)
             }
         }
     }
 
     return (
-        <Dialog>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <ButtonAnt
                     iconPosition='start'

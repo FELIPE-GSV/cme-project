@@ -30,18 +30,26 @@ class UserListSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'email', 'is_staff', 'is_superuser']
 
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['id', 'name', 'identifier']
+
+class ListMaterialSerializer(serializers.ModelSerializer):
+    category = CategorySerializer(read_only=True)
+    class Meta:
+        model = Material
+        fields = '__all__'
+
 
 class MaterialSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = Material
         fields = ['id', 'serial', 'name', 'type', 'expiry_date', 'category', 'campo']
         extra_kwargs = { 'serial': {'required': False}}
 
 
-class CategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        fields = ['id', 'name', 'identifier']
 
 
 class ConditionSerializer(serializers.ModelSerializer):

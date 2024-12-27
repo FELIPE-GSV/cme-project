@@ -31,6 +31,8 @@ export default function FormCompleteTratament({ listTrataments, onMessage, trata
         finish_at: tratament.finish_at
     });
 
+    const [isOpen, setIsOpen] = useState(false)
+
     const updateTratament = async () => {
         if (typeof window !== undefined) {
             const token = localStorage.getItem('token')
@@ -38,12 +40,13 @@ export default function FormCompleteTratament({ listTrataments, onMessage, trata
             if (response) {
                 listTrataments()
                 onMessage()
+                setIsOpen(false)
             }
         }
     }
 
     return (
-        <Dialog>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <ButtonAnt
                     type="primary"

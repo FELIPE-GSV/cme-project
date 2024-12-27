@@ -42,6 +42,8 @@ export default function FormCreateTratament({ receivings, listTrataments, onMess
         }));
     };
 
+    const [isOpen, setIsOpen] = useState(false)
+
     const createTratament = async () => {
         if (typeof window !== undefined) {
             const token = localStorage.getItem('token')
@@ -60,13 +62,14 @@ export default function FormCreateTratament({ receivings, listTrataments, onMess
                 await postTratament(token, dataToRequest)
                 listTrataments()
                 onMessage()
+                setIsOpen(false)
 
             }
         }
     }
 
     return (
-        <Dialog>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <ButtonAnt
                     iconPosition='start'

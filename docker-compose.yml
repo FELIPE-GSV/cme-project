@@ -22,11 +22,5 @@ services:
       - ./backend/data/postgres/data:/var/lib/postgresql/data/
     env_file:
       - ./backend/dotenv_files/.env
-  frontend:
-    build: 
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: frontend
-    ports:
-      - "3000:3000"
+
   

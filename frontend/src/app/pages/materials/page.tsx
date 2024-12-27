@@ -126,7 +126,7 @@ export default function Materials() {
 
                 return (
                     <div>
-                        <strong>{convertCategory(record.category)}</strong>
+                        <strong>{record.category.name}</strong>
                     </div>
                 )
             }

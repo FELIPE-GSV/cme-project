@@ -64,10 +64,10 @@ export default function Users() {
             return
         }
 
-        if(typeof window !== undefined){
+        if (typeof window !== undefined) {
             const token = localStorage.getItem('token')
             const response = await deleteUserByID(token, userToDelete.id)
-            if(response){
+            if (response) {
                 openNotificationWithIcon("success", "Usuário deletado.", "O usuário foi deletado com sucesso!")
                 listUsers()
                 return
@@ -114,14 +114,14 @@ export default function Users() {
         {
             title: "Ações",
             key: "actions",
-            width: '25%', 
+            width: '25%',
 
             render: (_, record) => (
                 <div style={{ display: "flex", gap: 8 }}>
-                    <FormEditUser 
+                    <FormEditUser
                         findUsers={listUsers}
                         user={record}
-                        onMessage={() =>  openNotificationWithIcon("success", "Usuário editado.", "Informações alteradas com sucesso!")}
+                        onMessage={() => openNotificationWithIcon("success", "Usuário editado.", "Informações alteradas com sucesso!")}
 
                     />
                     <Button
@@ -169,7 +169,10 @@ export default function Users() {
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />
-                    <FormCreateUser findUsers={listUsers}/>
+                    <FormCreateUser
+                        findUsers={listUsers}
+                        onMessage={()=> openNotificationWithIcon("success", "Usuário criado.", "As informações foram salvas com sucesso!")}
+                    />
                 </section>
                 <Table
                     dataSource={filteredUsers}

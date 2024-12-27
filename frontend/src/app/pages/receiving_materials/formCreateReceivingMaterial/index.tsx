@@ -37,6 +37,8 @@ export default function FormCreateReceivingMaterial({ materials, conditions, lis
         need_discard: false
     });
 
+    const [isOpen, setIsOpen] = useState(false);
+
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { id, value, type, checked } = e.target;
         setReceivingMaterial((prevState) => ({
@@ -51,13 +53,14 @@ export default function FormCreateReceivingMaterial({ materials, conditions, lis
             if (response) {
                 listReceivingMaterials()
                 onMessage()
+                setIsOpen(false)
             }
         }
     }
 
 
     useEffect(() => {
-        if (receivingMaterial.condition === "00fafcf9-ada8-45b2-820d-130b858dbc05") {
+        if (receivingMaterial.condition === conditions[2].identifier) {
             setReceivingMaterial(prevState => ({
                 ...prevState,
                 need_discard: true,
@@ -76,7 +79,7 @@ export default function FormCreateReceivingMaterial({ materials, conditions, lis
     
 
     return (
-        <Dialog>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <ButtonAnt
                     iconPosition='start'

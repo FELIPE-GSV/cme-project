@@ -30,10 +30,11 @@ export function FormEditMaterial({ categories, listMaterials, onMessage, materia
         name: materialToEdit.name,
         type: materialToEdit.type,
         expiry_date: materialToEdit.expiry_date,
-        category: materialToEdit.category,
+        category: materialToEdit.category.id,
         campo: materialToEdit.campo,
         serial: materialToEdit.serial
     });
+    const [isOpen, setIsOpen] = useState(false);
 
     const handleChange = (e: ChangeEvent<HTMLInputElement> & HTMLSelectElement) => {
         const { id, value } = e.target;
@@ -51,12 +52,13 @@ export function FormEditMaterial({ categories, listMaterials, onMessage, materia
             if(response) {
                 listMaterials()
                 onMessage()
+                setIsOpen(false)
             }
         }
     }
 
     return (
-        <Dialog>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <ButtonAnt
                     type="primary"

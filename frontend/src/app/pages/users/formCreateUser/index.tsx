@@ -13,14 +13,15 @@ import { Label } from "@/components/ui/label"
 import { Plus } from "lucide-react"
 import { Button as ButtonAnt } from "antd"
 import { Switch } from "@/components/ui/switch"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { createUserInBd } from "@/services/userService"
 
 interface Props {
     findUsers: () => void
+    onMessage: () => void
 }
 
-export function FormCreateUser({ findUsers }: Props) {
+export function FormCreateUser({ findUsers, onMessage }: Props) {
 
     const [userObject, setUserObject] = useState({
         "username": "",
@@ -29,18 +30,22 @@ export function FormCreateUser({ findUsers }: Props) {
         "email": ""
     })
 
+    const [isOpen, setIsOpen] = useState(false);
+
     const createUser = async () => {
         if(typeof window !== undefined){
             const token = localStorage.getItem('token')
             const response = await createUserInBd(token, userObject)
             if(response){
                 findUsers()
+                onMessage()
+                setIsOpen(false);
             }
         }
     }
 
     return (
-        <Dialog>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <ButtonAnt
                     iconPosition='start'

@@ -13,6 +13,7 @@ import { putTratament } from "@/services/tratamentsService"
 import { Tratament } from "@/types/models"
 import { DiffOutlined } from "@ant-design/icons"
 import { Button as ButtonAnt } from "antd"
+import { useState } from "react"
 
 interface Props {
     listTrataments: () => void
@@ -21,6 +22,8 @@ interface Props {
 }
 
 export default function FormDistribution({ listTrataments, onMessage, tratament }: Props) {
+
+     const [isOpen, setIsOpen] = useState(false)
 
     const updateTratament = async () => {
         if (typeof window !== undefined) {
@@ -38,12 +41,13 @@ export default function FormDistribution({ listTrataments, onMessage, tratament 
             if (response) {
                 listTrataments()
                 onMessage()
+                setIsOpen(false)
             }
         }
     }
 
     return (
-        <Dialog>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <ButtonAnt
                     type="primary"

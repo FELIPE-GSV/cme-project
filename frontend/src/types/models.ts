@@ -19,7 +19,7 @@ export interface Material {
     name: string;
     type: string;
     expiry_date: string;
-    category: number;
+    category: Category;
     campo: string;
 }
 
