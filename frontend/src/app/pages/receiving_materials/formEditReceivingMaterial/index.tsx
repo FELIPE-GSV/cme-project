@@ -64,7 +64,7 @@ export default function FormEditReceivingMaterial({ materials, conditions, listR
 
         console.log(conditions)
 
-        if (receivingMaterial.condition === conditions[2].identifier) {
+        if (receivingMaterial.condition === conditions[2]?.identifier) {
             setReceivingMaterial(prevState => ({
                 ...prevState,
                 need_discard: true,

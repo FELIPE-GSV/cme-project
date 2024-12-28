@@ -60,7 +60,9 @@ export default function FormCreateReceivingMaterial({ materials, conditions, lis
 
 
     useEffect(() => {
-        if (receivingMaterial.condition === conditions[2].identifier) {
+
+
+        if (receivingMaterial.condition === conditions[2]?.identifier) {
             setReceivingMaterial(prevState => ({
                 ...prevState,
                 need_discard: true,
