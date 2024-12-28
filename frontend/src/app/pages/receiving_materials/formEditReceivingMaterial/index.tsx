@@ -17,13 +17,14 @@ import { Switch } from "@/components/ui/switch";
 import { Condition, Material, ReceivingMaterial } from "@/types/models";
 import { putReceivingMaterials } from "@/services/receivingMaterialService";
 import { EditOutlined } from "@ant-design/icons";
+import { NotificationType } from "@/app/layout";
 
 interface Props {
     materials: Material[]
     conditions: Condition[]
     listReceivingMaterials: () => void
     receiving: ReceivingMaterial
-    onMessage: () => void
+    onMessage: (message: string, type: NotificationType, description: string) => void
 }
 
 export default function FormEditReceivingMaterial({ materials, conditions, listReceivingMaterials, receiving, onMessage }: Props) {
@@ -51,11 +52,16 @@ export default function FormEditReceivingMaterial({ materials, conditions, listR
         if (typeof window !== undefined) {
             const token = localStorage.getItem("token")
             const response = await putReceivingMaterials(token, receiving.id, receivingMaterial)
-            if (response) {
+
+            if (response.ok) {
+                onMessage("Edição realizada!", "success", "A edição foi realizada com sucesso.")
                 listReceivingMaterials()
-                onMessage()
+                setIsOpen(false)
+            } else if(response.status === 500){
+                onMessage("Erro interno!", "error", "Erro no processo da api!")
                 setIsOpen(false)
             }
+
         }
     }
 
@@ -103,7 +109,7 @@ export default function FormEditReceivingMaterial({ materials, conditions, listR
                     <Label htmlFor="material" className="text-right">
                         Material
                     </Label>
-                    <Select value={receiving.material.serial} onValueChange={(value) => setReceivingMaterial({ ...receivingMaterial, material: value })}>
+                    <Select value={receiving.material.serial} onValueChange={(value) => setReceivingMaterial({ ...receivingMaterial, material: value })} disabled>
                         <SelectTrigger className="col-span-3 h-[31px]">
                             <SelectValue placeholder="Selecione um material" />
                         </SelectTrigger>
@@ -162,39 +168,48 @@ export default function FormEditReceivingMaterial({ materials, conditions, listR
                     </Select>
                 </div>
 
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="need_washing" className="text-right">
-                        Necessita Lavagem
-                    </Label>
-                    <Switch
-                        checked={receivingMaterial.need_washing}
-                        onCheckedChange={(value) => setReceivingMaterial({ ...receivingMaterial, need_washing: value })}
-                        disabled={receivingMaterial.condition === "00fafcf9-ada8-45b2-820d-130b858dbc05"}
-                    />
-                </div>
-
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="need_sterilization" className="text-right">
-                        Necessita Esterilização
-                    </Label>
-                    <Switch
-                        checked={receivingMaterial.need_sterilization}
-                        onCheckedChange={(value) => setReceivingMaterial({ ...receivingMaterial, need_sterilization: value })}
-                        disabled={receivingMaterial.condition === "00fafcf9-ada8-45b2-820d-130b858dbc05"}
-                    />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="need_discard" className="text-right">
-                        Necessita Descarte
-                    </Label>
-                    <Switch
-                        checked={receivingMaterial.need_discard}
-                        onCheckedChange={(value) => setReceivingMaterial({ ...receivingMaterial, need_discard: value })}
-                        disabled={receivingMaterial.condition !== "00fafcf9-ada8-45b2-820d-130b858dbc05"}
-
-
-                    />
-                </div>
+                {receivingMaterial.condition !== "" && (
+                    <>
+                        {receivingMaterial.condition !== conditions[2]?.identifier && (
+                            <>
+                                <div className="grid grid-cols-4 items-center gap-4">
+                                    <Label htmlFor="need_washing" className="text-right">
+                                        Necessita Lavagem
+                                    </Label>
+                                    <Switch
+                                        checked={receivingMaterial.need_washing}
+                                        onCheckedChange={(value) => setReceivingMaterial({ ...receivingMaterial, need_washing: value })}
+                                        disabled={receivingMaterial.condition === "00fafcf9-ada8-45b2-820d-130b858dbc05"}
+                                    />
+                                </div>
+                                <div className="grid grid-cols-4 items-center gap-4">
+                                    <Label htmlFor="need_sterilization" className="text-right">
+                                        Necessita Esterilização
+                                    </Label>
+                                    <Switch
+                                        checked={receivingMaterial.need_sterilization}
+                                        onCheckedChange={(value) => setReceivingMaterial({ ...receivingMaterial, need_sterilization: value })}
+                                        disabled={receivingMaterial.condition === "00fafcf9-ada8-45b2-820d-130b858dbc05"}
+                                    />
+                                </div>
+                            </>
+                        )}
+                        {receivingMaterial.condition === conditions[2]?.identifier && (
+                            <>
+                                <div className="grid grid-cols-4 items-center gap-4">
+                                    <Label htmlFor="need_discard" className="text-right">
+                                        Necessita Descarte
+                                    </Label>
+                                    <Switch
+                                        checked={receivingMaterial.need_discard}
+                                        onCheckedChange={(value) => setReceivingMaterial({ ...receivingMaterial, need_discard: value })}
+                                        disabled={receivingMaterial.condition !== "00fafcf9-ada8-45b2-820d-130b858dbc05"}
+                                    />
+                                </div>
+                            </>
+                        )}
+                    </>
+                )}
                 <DialogFooter>
                     <Button type="submit" className="bg-[#0d8f80]" onClick={editReceivingMaterial}>Editar</Button>
                 </DialogFooter>

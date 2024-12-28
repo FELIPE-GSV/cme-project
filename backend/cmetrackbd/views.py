@@ -213,6 +213,11 @@ def create_receiving_materials(request):
         try:
             material = Material.objects.get(serial=data['material'])
             condition = Condition.objects.get(identifier=data['condition'])
+
+            # Verificar se o serial já foi registrado em ReceivingMaterials
+            if ReceivingMaterials.objects.filter(material=material).exists():
+                return Response({'error': 'Este material ja foi solicitado anteriomente.'}, status=status.HTTP_400_BAD_REQUEST)
+
             data['material'] = material.pk
             data['condition'] = condition.pk
             serializer = CreateReceivingMaterialsSerializer(data=data)
@@ -224,6 +229,7 @@ def create_receiving_materials(request):
             return Response({'error': 'Material not found'}, status=status.HTTP_400_BAD_REQUEST)
         except Condition.DoesNotExist:
             return Response({'error': 'Condition not found'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
@@ -373,6 +379,11 @@ def update_tratament(request, id):
     data = request.data
     try:
         material = Material.objects.get(serial=data['material'])
+
+        # Verificar se o serial já foi registrado em ReceivingMaterials
+        if ReceivingMaterials.objects.filter(material=material).exists():
+            return Response({'error': 'O material selecionado já foi solicitado.'}, status=status.HTTP_400_BAD_REQUEST)
+
         data['material'] = material.pk
         serializer = CreateTratamentSerializer(tratament, data=data)
         if serializer.is_valid():
@@ -383,6 +394,7 @@ def update_tratament(request, id):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     except Material.DoesNotExist:
         return Response({'error': 'Material not found'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])

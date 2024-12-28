@@ -17,12 +17,13 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Condition, Material } from "@/types/models";
 import { postReceivingMaterials } from "@/services/receivingMaterialService";
+import { NotificationType } from "@/app/layout";
 
 interface Props {
     materials: Material[]
     conditions: Condition[]
     listReceivingMaterials: () => void
-    onMessage: () => void
+    onMessage: (message: string, type: NotificationType, description: string) => void
 }
 
 export default function FormCreateReceivingMaterial({ materials, conditions, listReceivingMaterials, onMessage }: Props) {
@@ -47,12 +48,29 @@ export default function FormCreateReceivingMaterial({ materials, conditions, lis
     };
 
     const createReceivingMaterial = async () => {
+        if (
+            receivingMaterial.material === "" ||
+            receivingMaterial.entry_date === "" ||
+            receivingMaterial.condition === ""
+        ) {
+            onMessage("Solicitação inválida", "warning", "Preencha ou selecione todos os campos!")
+            return
+        }
+
         if (typeof window !== undefined) {
             const token = localStorage.getItem("token")
             const response = await postReceivingMaterials(token, receivingMaterial)
-            if (response) {
+            console.log(response)
+            if (response.status === 400) {
+                const data = await response.json()
+                onMessage("Solicitação inválida", "warning", data.error)
+                setIsOpen(false)
+            } else if (response.ok) {
                 listReceivingMaterials()
-                onMessage()
+                onMessage("Solitação realizada!", "success", "Solicitação foi feita com sucesso!")
+                setIsOpen(false)
+            } else if (response.status === 500) {
+                onMessage("Erro interno!", "error", "Erro no processo da api!")
                 setIsOpen(false)
             }
         }
@@ -78,7 +96,7 @@ export default function FormCreateReceivingMaterial({ materials, conditions, lis
             }));
         }
     }, [receivingMaterial.condition, conditions]);
-    
+
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -161,42 +179,50 @@ export default function FormCreateReceivingMaterial({ materials, conditions, lis
                         </SelectContent>
                     </Select>
                 </div>
-
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="need_washing" className="text-right">
-                        Necessita Lavagem
-                    </Label>
-                    <Switch
-                        checked={receivingMaterial.need_washing}
-                        onCheckedChange={(value) => setReceivingMaterial({ ...receivingMaterial, need_washing: value })}
-                        disabled={receivingMaterial.condition === "00fafcf9-ada8-45b2-820d-130b858dbc05"}
-                    />
-                </div>
-
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="need_sterilization" className="text-right">
-                        Necessita Esterilização
-                    </Label>
-                    <Switch
-                        checked={receivingMaterial.need_sterilization}
-                        onCheckedChange={(value) => setReceivingMaterial({ ...receivingMaterial, need_sterilization: value })}
-                        disabled={receivingMaterial.condition === "00fafcf9-ada8-45b2-820d-130b858dbc05"}
-                    />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="need_discard" className="text-right">
-                        Necessita Descarte
-                    </Label>
-                    <Switch
-                        checked={receivingMaterial.need_discard}
-                        onCheckedChange={(value) => setReceivingMaterial({ ...receivingMaterial, need_discard: value })}
-                        disabled={receivingMaterial.condition !== "00fafcf9-ada8-45b2-820d-130b858dbc05"}
-
-
-                    />
-                </div>
+                {receivingMaterial.condition !== "" && (
+                    <>
+                        {receivingMaterial.condition !== conditions[2]?.identifier && (
+                            <>
+                                <div className="grid grid-cols-4 items-center gap-4">
+                                    <Label htmlFor="need_washing" className="text-right">
+                                        Necessita Lavagem
+                                    </Label>
+                                    <Switch
+                                        checked={receivingMaterial.need_washing}
+                                        onCheckedChange={(value) => setReceivingMaterial({ ...receivingMaterial, need_washing: value })}
+                                        disabled={receivingMaterial.condition === "00fafcf9-ada8-45b2-820d-130b858dbc05"}
+                                    />
+                                </div>
+                                <div className="grid grid-cols-4 items-center gap-4">
+                                    <Label htmlFor="need_sterilization" className="text-right">
+                                        Necessita Esterilização
+                                    </Label>
+                                    <Switch
+                                        checked={receivingMaterial.need_sterilization}
+                                        onCheckedChange={(value) => setReceivingMaterial({ ...receivingMaterial, need_sterilization: value })}
+                                        disabled={receivingMaterial.condition === "00fafcf9-ada8-45b2-820d-130b858dbc05"}
+                                    />
+                                </div>
+                            </>
+                        )}
+                        {receivingMaterial.condition === conditions[2]?.identifier && (
+                            <>
+                                <div className="grid grid-cols-4 items-center gap-4">
+                                    <Label htmlFor="need_discard" className="text-right">
+                                        Necessita Descarte
+                                    </Label>
+                                    <Switch
+                                        checked={receivingMaterial.need_discard}
+                                        onCheckedChange={(value) => setReceivingMaterial({ ...receivingMaterial, need_discard: value })}
+                                        disabled={receivingMaterial.condition !== "00fafcf9-ada8-45b2-820d-130b858dbc05"}
+                                    />
+                                </div>
+                            </>
+                        )}
+                    </>
+                )}
                 <DialogFooter>
-                    <Button type="submit" className="bg-[#0d8f80]" onClick={createReceivingMaterial}>Cadastrar</Button>
+                    <Button type="submit" className="bg-[#0d8f80]" onClick={createReceivingMaterial}>Solicitar</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

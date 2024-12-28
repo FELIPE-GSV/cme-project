@@ -76,6 +76,8 @@ export async function postReceivingMaterials(token: string | null, data: {
             }),
         })
 
+        return response
+
         if (response.ok) {
             const data = await response.json()
             return data
@@ -122,10 +124,14 @@ export async function putReceivingMaterials(token: string | null, id: number | u
             }),
         })
 
+        return response
+
         if (response.ok) {
             const data = await response.json()
             return data
         }
+
+
     } catch (error) {
         console.log(error)
         return error

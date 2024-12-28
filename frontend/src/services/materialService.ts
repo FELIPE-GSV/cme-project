@@ -33,7 +33,7 @@ export async function createMaterialInBd(token: string | null, material: {
             return data
         }
     } catch (error) {
-        console.log(error)
+        return(error)
     }
 }
 

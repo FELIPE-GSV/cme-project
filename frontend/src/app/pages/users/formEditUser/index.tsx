@@ -15,10 +15,11 @@ import { useState } from "react"
 import { EditOutlined } from "@ant-design/icons"
 import { editUserById } from "@/services/userService"
 import { UserList } from "@/types/models"
+import { NotificationType } from "@/app/layout"
 
 interface Props {
     findUsers: () => void
-    onMessage: () => void
+    onMessage: (message: string, type: NotificationType, description: string) => void
     user: UserList
 }
 
@@ -36,9 +37,19 @@ export function FormEditUser({ findUsers, onMessage, user }: Props) {
         if(typeof window !== undefined){
             const token = localStorage.getItem('token')
             const response = await editUserById(token, userObject)
-            if(response){
-                onMessage()
+            if(response.status === 400){
+                const data = await response.json()
+                if(data.username){
+                    onMessage("Nome inválido", "warning", "Nome de usuário fornecido já é existente.")
+                    return
+                }
+            } else if (response.status === 500) {
+                onMessage("Erro interno!", "error", "Erro no processo da api!")
+                setIsOpen(false)
+            } else if(response.ok) {
                 findUsers()
+                onMessage("Usuário alterado", "success", "O usuário foi alterado com sucesso.")
+                setIsOpen(false);
             }
         }
     }

@@ -121,7 +121,7 @@ export default function Users() {
                     <FormEditUser
                         findUsers={listUsers}
                         user={record}
-                        onMessage={() => openNotificationWithIcon("success", "Usuário editado.", "Informações alteradas com sucesso!")}
+                        onMessage={(message: string, type: NotificationType, description: string)=> openNotificationWithIcon(type, message, description)}
 
                     />
                     <Button
@@ -171,7 +171,7 @@ export default function Users() {
                     />
                     <FormCreateUser
                         findUsers={listUsers}
-                        onMessage={()=> openNotificationWithIcon("success", "Usuário criado.", "As informações foram salvas com sucesso!")}
+                        onMessage={(message: string, type: NotificationType, description: string)=> openNotificationWithIcon(type, message, description)}
                     />
                 </section>
                 <Table

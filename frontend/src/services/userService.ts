@@ -15,6 +15,8 @@ export async function createUserInBd(token: string | null, data: { username: str
             body: JSON.stringify({ username, email, password, is_admin }),
         })
 
+        return response
+
         if (response.ok) {
             const dataResponse = await response.json()
             return await dataResponse
@@ -59,6 +61,8 @@ export async function editUserById(token: string | null, data: {id: number | und
             },
             body: JSON.stringify({ username, email }),
         })
+
+        return response
 
         if(response.ok){
             const data = await response.json()

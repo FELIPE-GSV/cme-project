@@ -160,7 +160,7 @@ export default function ReceivingMaterials() {
                         listReceivingMaterials={listReceivingMaterials}
                         materials={materials}
                         receiving={record}
-                        onMessage={() => openNotificationWithIcon("success", "Solicitação editada.", "Informações alteradas com sucesso!")}
+                        onMessage={(message: string, type: NotificationType, description: string) => openNotificationWithIcon(type, message,description)}
 
                     />
                     <Button
@@ -190,7 +190,7 @@ export default function ReceivingMaterials() {
                 `}
             >
 
-                <h1 className="text-[32px] text-[#084D45] font-bold">Materiais</h1>
+                <h1 className="text-[32px] text-[#084D45] font-bold">Recebimento de Materiais</h1>
                 <section className=' w-full flex items-center justify-between gap-4'>
                     <Input
                         className="w-[30%] mt-2 border-[#15A393]"
@@ -209,7 +209,7 @@ export default function ReceivingMaterials() {
                         materials={materials}
                         conditions={conditions}
                         listReceivingMaterials={listReceivingMaterials}
-                        onMessage={() => openNotificationWithIcon("success", "Material Solicitado.", "Informações solicitadas com sucesso!")}
+                        onMessage={(message: string, type: NotificationType, description: string) => openNotificationWithIcon(type, message, description)}
                     />
 
                 </section>

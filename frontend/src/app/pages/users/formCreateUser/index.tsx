@@ -1,3 +1,4 @@
+"use client"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -12,16 +13,18 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Plus } from "lucide-react"
 import { Button as ButtonAnt } from "antd"
-import { Switch } from "@/components/ui/switch"
 import { useState } from "react"
 import { createUserInBd } from "@/services/userService"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { NotificationType } from "@/app/layout"
 
 interface Props {
     findUsers: () => void
-    onMessage: () => void
+    onMessage: (message: string, type: NotificationType, description: string) => void
 }
 
 export function FormCreateUser({ findUsers, onMessage }: Props) {
+
 
     const [userObject, setUserObject] = useState({
         "username": "",
@@ -33,12 +36,31 @@ export function FormCreateUser({ findUsers, onMessage }: Props) {
     const [isOpen, setIsOpen] = useState(false);
 
     const createUser = async () => {
-        if(typeof window !== undefined){
+        if(
+            userObject.password === "" ||
+            userObject.username === "" 
+        ){
+            onMessage("Dados inválidos", "warning", "Nome de usuário e senha são obrigatórios.")
+            return
+        }
+
+        if (typeof window !== undefined) {
             const token = localStorage.getItem('token')
+
+            console.log(userObject)
             const response = await createUserInBd(token, userObject)
-            if(response){
+            if(response.status === 400){
+                const data = await response.json()
+                if(data.username){
+                    onMessage("Nome inválido", "warning", "Nome de usuário fornecido já é existente.")
+                    return
+                }
+            } else if (response.status === 500) {
+                onMessage("Erro interno!", "error", "Erro no processo da api!")
+                setIsOpen(false)
+            } else if(response.ok) {
                 findUsers()
-                onMessage()
+                onMessage("Usuário registrado", "success", "O usuário foi cadastrado com sucesso.")
                 setIsOpen(false);
             }
         }
@@ -94,10 +116,35 @@ export function FormCreateUser({ findUsers, onMessage }: Props) {
                             id="password"
                             className="col-span-3"
                             value={userObject.password}
-                            onChange={(e)=> setUserObject({...userObject, password: e.target.value})}
+                            onChange={(e) => setUserObject({ ...userObject, password: e.target.value })}
                         />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="is_admin" className="text-right">
+                            Perfil
+                        </Label>
+                        <Select
+                            onValueChange={(value) =>
+                                setUserObject({ ...userObject, is_admin: value === "admin" ? true : false })
+                            }
+                        >
+                            <SelectTrigger className="col-span-3 h-[31px]">
+                                <SelectValue placeholder="Selecione um perfil" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectLabel>Condições</SelectLabel>
+                                    <SelectItem value="admin">Administrador</SelectItem>
+                                    <SelectItem value="enfermeiro">Enfermeiro</SelectItem>
+                                    <SelectItem value="tecnico">Técnico</SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+
+
+                    {/* <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="password" className="text-right">
                             Administrador
                         </Label>
@@ -105,7 +152,7 @@ export function FormCreateUser({ findUsers, onMessage }: Props) {
                             onCheckedChange={(e) => setUserObject({...userObject, is_admin: e})}
                             color="green"
                         />
-                    </div>
+                    </div> */}
                 </div>
                 <DialogFooter>
                     <Button type="submit" className="bg-[#0d8f80]" onClick={createUser}>Cadastrar</Button>
