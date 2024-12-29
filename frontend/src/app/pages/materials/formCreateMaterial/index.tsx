@@ -1,3 +1,4 @@
+import { NotificationType } from "@/app/layout";
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -20,7 +21,7 @@ import { ChangeEvent, useState } from "react"
 interface Props {
     categories: Category[]
     listMaterials: () => void
-    onMessage: () => void
+    onMessage: (type: NotificationType, message: string, description: string) => void
 }
 
 export function FormCreateMaterial({ categories, listMaterials, onMessage }: Props) {
@@ -29,7 +30,7 @@ export function FormCreateMaterial({ categories, listMaterials, onMessage }: Pro
         name: '',
         type: '',
         expiry_date: '',
-        category: 0,
+        category: 1,
         campo: '',
         serial: ''
     });
@@ -45,12 +46,24 @@ export function FormCreateMaterial({ categories, listMaterials, onMessage }: Pro
     const [isOpen, setIsOpen] = useState(false);
 
     const createMaterial = async () => {
+
+        if(
+            material.name === "" ||
+            material.type === "" ||
+            material.expiry_date === "" ||
+            material.campo === "" ||
+            material.serial === "" 
+        ){
+            onMessage("warning", "Informações inválidas.", "Certifique-se que preencheu !")
+            return
+        }
+
         if(typeof window !== undefined){
             const token = localStorage.getItem(`token`)
             const response = await createMaterialInBd(token, material)
-            if(response){
+            if(response.ok){
                 listMaterials()
-                onMessage()
+                onMessage("success", "Material cadastrado.", "Informações registradas com sucesso!")
                 setIsOpen(false)
             }
         }

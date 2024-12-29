@@ -176,7 +176,7 @@ export default function Trataments() {
                     <FormCreateTratament
                         receivings={receiving}
                         listTrataments={listTrataments}
-                        onMessage={() => openNotificationWithIcon("success", "Tratamento criado.", "Informações salvas com sucesso!")}
+                        onMessage={(type: NotificationType, message: string, description: string) => openNotificationWithIcon(type, message, description)}
                     />
 
                 </section>

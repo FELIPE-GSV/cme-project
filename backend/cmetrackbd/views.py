@@ -355,6 +355,10 @@ def create_tratament(request):
         data = request.data
         try:
             receiving_material = ReceivingMaterials.objects.get(material__serial=data['material'])
+            
+            if Tratament.objects.filter(material=receiving_material.material).exists():
+                return Response({'error': 'Este tratamento já existe.'}, status=status.HTTP_400_BAD_REQUEST)
+
             material = receiving_material.material
             data['material'] = material.pk
             serializer = CreateTratamentSerializer(data=data)
@@ -366,6 +370,7 @@ def create_tratament(request):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except ReceivingMaterials.DoesNotExist:
             return Response({'error': 'Este material não foi solicitado!'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 @api_view(['PUT'])
@@ -380,9 +385,6 @@ def update_tratament(request, id):
     try:
         material = Material.objects.get(serial=data['material'])
 
-        # Verificar se o serial já foi registrado em ReceivingMaterials
-        if ReceivingMaterials.objects.filter(material=material).exists():
-            return Response({'error': 'O material selecionado já foi solicitado.'}, status=status.HTTP_400_BAD_REQUEST)
 
         data['material'] = material.pk
         serializer = CreateTratamentSerializer(tratament, data=data)

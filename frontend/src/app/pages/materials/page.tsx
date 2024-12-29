@@ -196,7 +196,7 @@ export default function Materials() {
                     <FormCreateMaterial
                         categories={categories}
                         listMaterials={listMaterials}
-                        onMessage={() => openNotificationWithIcon("success", "Material cadastrado.", "Informações registradas com sucesso!")}
+                        onMessage={(type: NotificationType, message: string, description: string) => openNotificationWithIcon(type, message, description)}
                     />
                 </section>
                 <Table

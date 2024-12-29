@@ -17,11 +17,12 @@ import { ReceivingMaterial } from "@/types/models"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getReceivingMaterialsById } from "@/services/receivingMaterialService"
 import { postTratament } from "@/services/tratamentsService"
+import { NotificationType } from "@/app/layout"
 
 
 interface Props {
     receivings: ReceivingMaterial[]
-    onMessage: () => void
+    onMessage: (type: NotificationType, message: string, description: string) => void
     listTrataments: () => void
 }
 
@@ -59,10 +60,16 @@ export default function FormCreateTratament({ receivings, listTrataments, onMess
                 }
 
                 console.log(dataToRequest)
-                await postTratament(token, dataToRequest)
-                listTrataments()
-                onMessage()
-                setIsOpen(false)
+                const responsePost = await postTratament(token, dataToRequest)
+                if(responsePost.ok){
+                    listTrataments()
+                    onMessage("success", "Tratamento registrado!", "O tratamento foi registrado com sucesso.")
+                    setIsOpen(false)
+                } else if (responsePost.status === 400) {
+                    const data = await responsePost.json()
+                    onMessage("warning", "Tratamento existente!", data.error)
+                    setIsOpen(false)
+                }
 
             }
         }

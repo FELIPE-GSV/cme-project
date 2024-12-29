@@ -28,6 +28,8 @@ export async function createMaterialInBd(token: string | null, material: {
 
         })
 
+        return response
+
         if (response.ok) {
             const data = await response.json()
             return data

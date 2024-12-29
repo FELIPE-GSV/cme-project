@@ -1,3 +1,4 @@
+import { NotificationType } from "@/app/layout"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -17,15 +18,21 @@ import { useState } from "react"
 
 interface Props {
     listTrataments: () => void
-    onMessage: () => void
+    onMessage: (type: NotificationType, message: string, description: string) => void
     tratament: Tratament
 }
 
 export default function FormDistribution({ listTrataments, onMessage, tratament }: Props) {
 
-     const [isOpen, setIsOpen] = useState(false)
+    const [isOpen, setIsOpen] = useState(false)
+    const [setor, setSetor] = useState("")
 
     const updateTratament = async () => {
+
+        if (setor === "") {
+            onMessage("warning", "Informações insuficientes!", "Forneça o setor para distribuição.")
+            return
+        }
         if (typeof window !== undefined) {
             const token = localStorage.getItem('token')
 
@@ -40,7 +47,7 @@ export default function FormDistribution({ listTrataments, onMessage, tratament 
             const response = await putTratament(tratament.id, token, data)
             if (response) {
                 listTrataments()
-                onMessage()
+                onMessage("success", "Tratamento concluído!", "O tratamento foi concluído com sucesso.")
                 setIsOpen(false)
             }
         }
@@ -72,6 +79,8 @@ export default function FormDistribution({ listTrataments, onMessage, tratament 
                         id="finish_at"
                         type="text"
                         className="col-span-3"
+                        value={setor}
+                        onChange={(e) => setSetor(e.target.value)}
                     />
                 </div>
                 <DialogFooter>

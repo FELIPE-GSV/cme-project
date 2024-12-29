@@ -76,9 +76,9 @@ export default function Distribution() {
 
             render: (_, record) => (
                 <div style={{ display: "flex", gap: 8 }}>
-                    <FormDistribution 
+                    <FormDistribution
                         listTrataments={listTrataments}
-                        onMessage={()=> openNotificationWithIcon("success", "Material distribuído.", "O material foi distribuído com sucesso.")}
+                        onMessage={(type: NotificationType, message: string, description: string) => openNotificationWithIcon(type, message, description)}
                         tratament={record}
                     />
                 </div>

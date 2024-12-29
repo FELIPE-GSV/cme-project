@@ -84,6 +84,8 @@ export async function postTratament(token: string | null, data: {
                 finish_at,
             }),
         })
+
+        return response
         if (response.ok) {
             const data = response.json()
             return data
